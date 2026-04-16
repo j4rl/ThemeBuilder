@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="sv">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ThemeBuilder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link id="googleFontsLink"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Merriweather:wght@700;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <main class="app-shell">
+    <section class="workspace" aria-label="Temabyggare">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">ThemeBuilder</p>
+          <h1>Bygg ett CSS-tema</h1>
+        </div>
+        <div class="actions">
+          <div class="mode-toggle app-theme-toggle" role="group" aria-label="Appens färgläge">
+            <button type="button" class="mode-button active" data-app-theme-mode="auto">Auto</button>
+            <button type="button" class="mode-button" data-app-theme-mode="light">Ljus</button>
+            <button type="button" class="mode-button" data-app-theme-mode="dark">Mörk</button>
+          </div>
+          <button class="primary-button" type="button" id="downloadCss">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path
+                d="M12 3a1 1 0 0 1 1 1v8.6l2.3-2.3a1 1 0 0 1 1.4 1.4l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4l2.3 2.3V4a1 1 0 0 1 1-1ZM5 17a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1Z" />
+            </svg>
+            Ladda ned CSS
+          </button>
+        </div>
+      </header>
+
+      <div class="builder-grid">
+        <aside class="panel controls-panel" aria-label="Inställningar">
+          <div class="panel-heading">
+            <h2>Inställningar</h2>
+            <div class="settings-actions">
+              <button class="icon-button small-icon-button" type="button" id="randomizeTheme" aria-label="Slumpa tema"
+                title="Slumpa tema">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path
+                    d="M15.8 3.9a1 1 0 0 1 1.4 0l2.9 2.9a1 1 0 0 1 0 1.4l-2.9 2.9a1 1 0 1 1-1.4-1.4L17 8.5h-2.3a5 5 0 0 0-4 2l-.9 1.2-1.3-1.5.6-.8a7 7 0 0 1 5.6-2.9H17l-1.2-1.2a1 1 0 0 1 0-1.4Zm-7.6 8.7 1.3 1.5-.6.8a7 7 0 0 1-5.6 2.9H3a1 1 0 1 1 0-2h.3a5 5 0 0 0 4-2l.9-1.2Zm7.6.3a1 1 0 0 1 1.4 0l2.9 2.9a1 1 0 0 1 0 1.4l-2.9 2.9a1 1 0 0 1-1.4-1.4l1.2-1.2h-2.3a7 7 0 0 1-5.6-2.9l-4.4-5.8a5 5 0 0 0-4-2H3a1 1 0 0 1 0-2h1.7a7 7 0 0 1 5.6 2.9l4.4 5.8a5 5 0 0 0 4 2H17l-1.2-1.2a1 1 0 0 1 0-1.4Z" />
+                </svg>
+              </button>
+              <button class="ghost-button" type="button" id="copyCss">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path
+                    d="M8 3a3 3 0 0 0-3 3v9a1 1 0 1 0 2 0V6a1 1 0 0 1 1-1h9a1 1 0 1 0 0-2H8Zm3 4a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3v-8a3 3 0 0 0-3-3h-6Zm-1 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1v-8Z" />
+                </svg>
+                Kopiera
+              </button>
+            </div>
+          </div>
+
+          <form id="themeForm" class="theme-form">
+            <label class="field">
+              <span>Temanamn</span>
+              <input type="text" id="themeName" value="nordic-product" autocomplete="off">
+            </label>
+
+            <div class="field color-field">
+              <label for="baseColor">Basfärg</label>
+              <div class="color-control">
+                <input type="color" id="baseColor" value="#2563eb">
+                <input type="text" id="baseColorText" value="#2563eb" maxlength="7" spellcheck="false">
+              </div>
+            </div>
+
+            <div class="field color-field">
+              <label for="accentColor">Accentfärg</label>
+              <div class="color-control">
+                <input type="color" id="accentColor" value="#f97316">
+                <input type="text" id="accentColorText" value="#f97316" maxlength="7" spellcheck="false">
+              </div>
+            </div>
+
+            <fieldset class="field">
+              <legend>Färgharmoni</legend>
+              <div class="segmented">
+                <label>
+                  <input type="radio" name="harmony" value="analogous" checked>
+                  <span>Analog</span>
+                </label>
+                <label>
+                  <input type="radio" name="harmony" value="complementary">
+                  <span>Komplement</span>
+                </label>
+                <label>
+                  <input type="radio" name="harmony" value="triadic">
+                  <span>Triad</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <div class="field">
+              <div class="inline-label">
+                <label for="harmonySpread">Harmonispridning</label>
+                <output id="harmonySpreadValue" for="harmonySpread">100%</output>
+              </div>
+              <input type="range" id="harmonySpread" min="50" max="150" value="100">
+            </div>
+
+            <label class="field">
+              <span>Färgformat i CSS</span>
+              <select id="colorFormat">
+                <option value="hex">Hex</option>
+                <option value="rgb">RGB</option>
+                <option value="hsl">HSL</option>
+                <option value="oklch">OKLCH</option>
+                <option value="display-p3" disabled>Display P3</option>
+                <option value="all">Alla format</option>
+              </select>
+            </label>
+
+            <div class="font-grid">
+              <label class="field">
+                <span>Rubriktypsnitt</span>
+                <select id="headingFont"></select>
+              </label>
+
+              <label class="field">
+                <span>Brödtexttypsnitt</span>
+                <select id="bodyFont"></select>
+              </label>
+            </div>
+
+            <div class="font-match" id="fontMatch" aria-live="polite">
+              <span class="match-dot"></span>
+              <div>
+                <strong>Passar bra</strong>
+                <small>Rubrik och brödtext har tydlig kontrast.</small>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="inline-label">
+                <label for="radius">Rundning</label>
+                <output id="radiusValue" for="radius">10px</output>
+              </div>
+              <input type="range" id="radius" min="0" max="24" value="10">
+            </div>
+
+            <div class="field">
+              <div class="inline-label">
+                <label for="contrast">Kontrast</label>
+                <output id="contrastValue" for="contrast">Normal</output>
+              </div>
+              <input type="range" id="contrast" min="0" max="2" step="1" value="1">
+            </div>
+
+            <div class="components-option">
+              <label class="toggle-row">
+                <input type="checkbox" id="includeComponents" checked>
+                <span>Inkludera basklasser för knappar, kort och formulär</span>
+              </label>
+              <button class="icon-button small-icon-button" type="button" id="openComponentsInfo"
+                aria-label="Visa basklasser" title="Visa basklasser">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path
+                    d="M11 10a1 1 0 0 1 1-1h0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6Zm1-4.2a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4ZM12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-8 10a8 8 0 1 1 16 0 8 8 0 0 1-16 0Z" />
+                </svg>
+              </button>
+            </div>
+          </form>
+        </aside>
+
+        <section class="preview-column" aria-label="Förhandsvisning">
+          <div class="preview-toolbar">
+            <div class="mode-toggle" role="group" aria-label="Temavariant i förhandsvisning">
+              <button type="button" class="mode-button active" data-preview-mode="light">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path
+                    d="M12 4a1 1 0 0 1 1-1h0a1 1 0 0 1 0 2h0a1 1 0 0 1-1-1Zm0 16a1 1 0 0 1 1-1h0a1 1 0 0 1 0 2h0a1 1 0 0 1-1-1ZM4 12a1 1 0 0 1 1-1h0a1 1 0 0 1 0 2h0a1 1 0 0 1-1-1Zm16 0a1 1 0 0 1 1-1h0a1 1 0 0 1 0 2h0a1 1 0 0 1-1-1ZM6.3 6.3a1 1 0 0 1 1.4 0h0a1 1 0 0 1-1.4 1.4h0a1 1 0 0 1 0-1.4Zm10 10a1 1 0 0 1 1.4 0h0a1 1 0 0 1-1.4 1.4h0a1 1 0 0 1 0-1.4Zm1.4-10a1 1 0 0 1 0 1.4h0a1 1 0 0 1-1.4-1.4h0a1 1 0 0 1 1.4 0Zm-10 10a1 1 0 0 1 0 1.4h0a1 1 0 0 1-1.4-1.4h0a1 1 0 0 1 1.4 0ZM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" />
+                </svg>
+                Ljus
+              </button>
+              <button type="button" class="mode-button" data-preview-mode="dark">
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path
+                    d="M20.2 14.1a1 1 0 0 1 .2 1 8.5 8.5 0 1 1-11.5-11.5 1 1 0 0 1 1.2 1.3A6.5 6.5 0 0 0 19 14a1 1 0 0 1 1.2.1Z" />
+                </svg>
+                Mörk
+              </button>
+            </div>
+            <div class="status-pill" id="copyStatus" aria-live="polite">CSS redo</div>
+          </div>
+
+          <div class="swatch-strip" id="swatches" aria-label="Temafärger"></div>
+
+          <article class="preview-surface" id="previewSurface">
+            <div class="preview-inspector" id="previewInspector" aria-hidden="true"></div>
+            <nav class="mock-nav" aria-label="Exempelmeny">
+              <strong>Atlas Studio</strong>
+              <div>
+                <span>Design</span>
+                <span>System</span>
+                <span>Team</span>
+              </div>
+            </nav>
+
+            <section class="mock-hero">
+              <div>
+                <p class="preview-kicker">Produktlansering</p>
+                <h2>En tydlig visuell riktning för nästa version</h2>
+                <p>Förhandsvisningen använder samma CSS-variabler som exporten, så färger och typsnitt visas nära hur
+                  temat beter sig i ett riktigt projekt.</p>
+                <div class="mock-actions">
+                  <button type="button">Starta projekt</button>
+                  <button type="button" class="secondary">Visa detaljer</button>
+                </div>
+              </div>
+              <div class="mock-card">
+                <span class="card-label">Aktiv palett</span>
+                <strong id="previewThemeName">nordic-product</strong>
+                <div class="mini-chart" aria-hidden="true">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+            </section>
+
+            <section class="mock-content" aria-label="Exempelkomponenter">
+              <div class="stat-card">
+                <span>Kontrast</span>
+                <strong id="contrastScore">AA</strong>
+              </div>
+              <div class="stat-card">
+                <span>Primär</span>
+                <strong id="primaryHex">#2563eb</strong>
+              </div>
+              <label class="mock-input">
+                <span>E-post</span>
+                <input value="hej@example.se" aria-label="E-post">
+              </label>
+            </section>
+          </article>
+
+          <section class="code-panel" aria-label="Exporterad CSS">
+            <div class="panel-heading">
+              <h2>Exporterad CSS</h2>
+              <div class="code-actions">
+                <span id="cssSize">0 KB</span>
+                <button class="ghost-button" type="button" id="copyCssFromPanel">
+                  <svg aria-hidden="true" viewBox="0 0 24 24">
+                    <path
+                      d="M8 3a3 3 0 0 0-3 3v9a1 1 0 1 0 2 0V6a1 1 0 0 1 1-1h9a1 1 0 1 0 0-2H8Zm3 4a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3v-8a3 3 0 0 0-3-3h-6Zm-1 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1v-8Z" />
+                  </svg>
+                  Kopiera CSS
+                </button>
+              </div>
+            </div>
+            <pre><code id="cssOutput"></code></pre>
+          </section>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <dialog class="info-dialog" id="componentsDialog" aria-labelledby="componentsDialogTitle">
+    <div class="dialog-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">CSS-export</p>
+          <h2 id="componentsDialogTitle">Basklasser</h2>
+        </div>
+        <button class="icon-button small-icon-button" type="button" id="closeComponentsInfo" aria-label="Stäng">
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path
+              d="M6.3 5a1 1 0 0 1 1.4 0l4.3 4.3L16.3 5a1 1 0 1 1 1.4 1.4L13.4 10.7l4.3 4.3a1 1 0 0 1-1.4 1.4L12 12.1l-4.3 4.3A1 1 0 0 1 6.3 15l4.3-4.3-4.3-4.3a1 1 0 0 1 0-1.4Z" />
+          </svg>
+        </button>
+      </div>
+      <div class="class-list">
+        <div>
+          <code>.theme-button</code>
+          <p>Primär knapp med tema-färg, kontrasttext, rundning och skugga.</p>
+        </div>
+        <div>
+          <code>.theme-button.secondary</code>
+          <p>Sekundär knapp med ytfärg och kantlinje från temat.</p>
+        </div>
+        <div>
+          <code>.theme-card</code>
+          <p>Kort med tema-yta, kantlinje, rundning och exporterad skugga.</p>
+        </div>
+        <div>
+          <code>.theme-field</code>
+          <p>Wrapper för formulärfält som styr label, input, select och textarea.</p>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
