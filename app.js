@@ -74,6 +74,12 @@ const elements = {
   googleFontsLink: document.querySelector("#googleFontsLink"),
   harmonySpread: document.querySelector("#harmonySpread"),
   harmonySpreadValue: document.querySelector("#harmonySpreadValue"),
+  harmonyMarkers: {
+    primary: document.querySelector("#harmonyMarkerPrimary"),
+    secondary: document.querySelector("#harmonyMarkerSecondary"),
+    tertiary: document.querySelector("#harmonyMarkerTertiary"),
+    accent: document.querySelector("#harmonyMarkerAccent")
+  },
   radius: document.querySelector("#radius"),
   radiusValue: document.querySelector("#radiusValue"),
   contrast: document.querySelector("#contrast"),
@@ -331,17 +337,45 @@ function readableTextColor(background) {
     : "#101827";
 }
 
+function isNeutralTone(hsl) {
+  return hsl.s < 8;
+}
+
+function paletteSaturation(hsl) {
+  if (isNeutralTone(hsl)) {
+    return 0;
+  }
+  return clamp(hsl.s, 12, 92);
+}
+
+function surfaceSaturation(hsl, multiplier, minimum, maximum) {
+  if (isNeutralTone(hsl)) {
+    return 0;
+  }
+  return clamp(hsl.s * multiplier, minimum, maximum);
+}
+
 function accessibleTone(hsl, background, mode, contrastLevel) {
   const target = contrastLevel === 2 ? 5.2 : contrastLevel === 1 ? 4.6 : 3.9;
-  const candidate = { ...hsl, s: clamp(hsl.s, 46, 90), l: mode === "light" ? 46 : 62 };
+  const candidate = {
+    ...hsl,
+    s: paletteSaturation(hsl),
+    l: mode === "light" ? clamp(hsl.l, 0, 58) : clamp(hsl.l, 42, 92)
+  };
   const step = mode === "light" ? -2 : 2;
+  const minLightness = mode === "light" ? 0 : 42;
+  const maxLightness = mode === "light" ? 58 : 92;
 
-  for (let index = 0; index < 18; index += 1) {
+  for (let index = 0; index < 32; index += 1) {
     const hex = hslToHex(candidate);
     if (contrastRatio(hex, background) >= target) {
       return hex;
     }
-    candidate.l = clamp(candidate.l + step, mode === "light" ? 24 : 52, mode === "light" ? 56 : 80);
+    const nextLightness = clamp(candidate.l + step, minLightness, maxLightness);
+    if (nextLightness === candidate.l) {
+      break;
+    }
+    candidate.l = nextLightness;
   }
 
   return hslToHex(candidate);
@@ -364,6 +398,15 @@ function harmonyShifts(harmony, spread = 100) {
     return [0, 120 * scale, 240 * scale, 60 * scale];
   }
   return [0, -28 * scale, 28 * scale, 56 * scale];
+}
+
+function harmonyMarkerPosition(hsl, maxRadius = 34) {
+  const angle = (wrapHue(hsl.h) - 90) * Math.PI / 180;
+  const radius = clamp(hsl.s, 0, 100) / 100 * maxRadius;
+  return {
+    x: Math.cos(angle) * radius,
+    y: Math.sin(angle) * radius
+  };
 }
 
 function slugify(value) {
@@ -558,23 +601,25 @@ function generateTheme(state) {
   const baseHsl = rgbToHsl(hexToRgb(state.baseColor));
   const accentHsl = rgbToHsl(hexToRgb(state.accentColor));
   const shifts = harmonyShifts(state.harmony, state.harmonySpread);
-  const lightBg = tone(baseHsl, clamp(baseHsl.s * 0.2, 8, 22), state.contrastLevel === 2 ? 99 : 97);
-  const darkBg = tone(baseHsl, clamp(baseHsl.s * 0.22, 8, 24), state.contrastLevel === 0 ? 13 : 9);
+  const lightBg = tone(baseHsl, surfaceSaturation(baseHsl, 0.2, 4, 22), state.contrastLevel === 2 ? 99 : 97);
+  const darkBg = tone(baseHsl, surfaceSaturation(baseHsl, 0.22, 4, 24), state.contrastLevel === 0 ? 13 : 9);
   const lightPrimary = accessibleTone(baseHsl, lightBg, "light", state.contrastLevel);
   const darkPrimary = accessibleTone(baseHsl, darkBg, "dark", state.contrastLevel);
   const lightAccent = accessibleTone(accentHsl, lightBg, "light", state.contrastLevel);
   const darkAccent = accessibleTone(accentHsl, darkBg, "dark", state.contrastLevel);
+  const lightPrimaryHsl = rgbToHsl(hexToRgb(lightPrimary));
+  const darkPrimaryHsl = rgbToHsl(hexToRgb(darkPrimary));
 
   const light = {
     "color-scheme": "light",
     bg: lightBg,
-    surface: tone(baseHsl, clamp(baseHsl.s * 0.12, 5, 16), 100),
-    "surface-muted": tone(baseHsl, clamp(baseHsl.s * 0.16, 6, 18), state.contrastLevel === 2 ? 94 : 96),
-    text: tone(baseHsl, clamp(baseHsl.s * 0.34, 12, 32), state.contrastLevel === 0 ? 18 : 12),
-    muted: tone(baseHsl, clamp(baseHsl.s * 0.24, 10, 24), state.contrastLevel === 2 ? 32 : 42),
-    border: tone(baseHsl, clamp(baseHsl.s * 0.18, 6, 20), state.contrastLevel === 2 ? 82 : 88),
+    surface: tone(baseHsl, surfaceSaturation(baseHsl, 0.12, 3, 16), 100),
+    "surface-muted": tone(baseHsl, surfaceSaturation(baseHsl, 0.16, 4, 18), state.contrastLevel === 2 ? 94 : 96),
+    text: tone(baseHsl, surfaceSaturation(baseHsl, 0.34, 6, 32), state.contrastLevel === 0 ? 18 : 12),
+    muted: tone(baseHsl, surfaceSaturation(baseHsl, 0.24, 5, 24), state.contrastLevel === 2 ? 32 : 42),
+    border: tone(baseHsl, surfaceSaturation(baseHsl, 0.18, 4, 20), state.contrastLevel === 2 ? 82 : 88),
     primary: lightPrimary,
-    "primary-hover": tone(baseHsl, clamp(baseHsl.s, 48, 92), Math.max(rgbToHsl(hexToRgb(lightPrimary)).l - 7, 24)),
+    "primary-hover": tone(lightPrimaryHsl, lightPrimaryHsl.s, Math.max(lightPrimaryHsl.l - 7, 0)),
     "primary-contrast": readableTextColor(lightPrimary),
     accent: lightAccent,
     "accent-contrast": readableTextColor(lightAccent),
@@ -589,13 +634,13 @@ function generateTheme(state) {
   const dark = {
     "color-scheme": "dark",
     bg: darkBg,
-    surface: tone(baseHsl, clamp(baseHsl.s * 0.28, 8, 26), state.contrastLevel === 0 ? 18 : 14),
-    "surface-muted": tone(baseHsl, clamp(baseHsl.s * 0.25, 8, 24), state.contrastLevel === 0 ? 23 : 18),
-    text: tone(baseHsl, clamp(baseHsl.s * 0.12, 4, 14), state.contrastLevel === 0 ? 88 : 94),
-    muted: tone(baseHsl, clamp(baseHsl.s * 0.16, 6, 18), state.contrastLevel === 2 ? 76 : 70),
-    border: tone(baseHsl, clamp(baseHsl.s * 0.25, 8, 26), state.contrastLevel === 2 ? 32 : 25),
+    surface: tone(baseHsl, surfaceSaturation(baseHsl, 0.28, 4, 26), state.contrastLevel === 0 ? 18 : 14),
+    "surface-muted": tone(baseHsl, surfaceSaturation(baseHsl, 0.25, 4, 24), state.contrastLevel === 0 ? 23 : 18),
+    text: tone(baseHsl, surfaceSaturation(baseHsl, 0.12, 2, 14), state.contrastLevel === 0 ? 88 : 94),
+    muted: tone(baseHsl, surfaceSaturation(baseHsl, 0.16, 3, 18), state.contrastLevel === 2 ? 76 : 70),
+    border: tone(baseHsl, surfaceSaturation(baseHsl, 0.25, 4, 26), state.contrastLevel === 2 ? 32 : 25),
     primary: darkPrimary,
-    "primary-hover": tone(baseHsl, clamp(baseHsl.s, 48, 92), Math.min(rgbToHsl(hexToRgb(darkPrimary)).l + 7, 82)),
+    "primary-hover": tone(darkPrimaryHsl, darkPrimaryHsl.s, Math.min(darkPrimaryHsl.l + 7, 100)),
     "primary-contrast": readableTextColor(darkPrimary),
     accent: darkAccent,
     "accent-contrast": readableTextColor(darkAccent),
@@ -805,6 +850,27 @@ function updateSwatches(palette, state) {
   });
 }
 
+function updateHarmonyWheel(state, theme) {
+  const baseHsl = rgbToHsl(hexToRgb(state.baseColor));
+  const accentHsl = rgbToHsl(hexToRgb(state.accentColor));
+  const shifts = harmonyShifts(state.harmony, state.harmonySpread);
+  const markers = [
+    { key: "primary", hsl: { ...baseHsl, h: baseHsl.h + shifts[0] }, color: theme.light.primary, label: "Primär" },
+    { key: "secondary", hsl: { ...baseHsl, h: baseHsl.h + shifts[1] }, color: theme.light.secondary, label: "Sekundär" },
+    { key: "tertiary", hsl: { ...baseHsl, h: baseHsl.h + shifts[2] }, color: theme.light.tertiary, label: "Tertiär" },
+    { key: "accent", hsl: accentHsl, color: theme.light.accent, label: "Accent" }
+  ];
+
+  markers.forEach((marker) => {
+    const element = elements.harmonyMarkers[marker.key];
+    const position = harmonyMarkerPosition(marker.hsl);
+    element.style.setProperty("--marker-x", `${round(position.x, 2)}px`);
+    element.style.setProperty("--marker-y", `${round(position.y, 2)}px`);
+    element.style.setProperty("--marker-color", marker.color);
+    element.title = `${marker.label}: ${Math.round(wrapHue(marker.hsl.h))}°, ${Math.round(marker.hsl.s)}%`;
+  });
+}
+
 function updateTheme() {
   const state = getState();
   const theme = generateTheme(state);
@@ -818,6 +884,7 @@ function updateTheme() {
   updateGoogleFontLink([state.headingFont, state.bodyFont]);
   setPreviewVariables(tokens, state);
   updateSwatches(theme.palette, state);
+  updateHarmonyWheel(state, theme);
   updateFontMatch(fontMatch);
 
   elements.previewThemeName.textContent = state.name;

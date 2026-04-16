@@ -100,12 +100,21 @@
               </div>
             </fieldset>
 
-            <div class="field">
+            <div class="field harmony-field">
               <div class="inline-label">
                 <label for="harmonySpread">Harmonispridning</label>
                 <output id="harmonySpreadValue" for="harmonySpread">100%</output>
               </div>
-              <input type="range" id="harmonySpread" min="50" max="150" value="100">
+              <div class="harmony-control">
+                <input type="range" id="harmonySpread" min="50" max="150" value="100">
+                <div class="harmony-wheel" id="harmonyWheel" aria-label="Färgernas position på färgcirkeln">
+                  <span class="harmony-axis" aria-hidden="true"></span>
+                  <span class="harmony-marker primary" id="harmonyMarkerPrimary"></span>
+                  <span class="harmony-marker secondary" id="harmonyMarkerSecondary"></span>
+                  <span class="harmony-marker tertiary" id="harmonyMarkerTertiary"></span>
+                  <span class="harmony-marker accent" id="harmonyMarkerAccent"></span>
+                </div>
+              </div>
             </div>
 
             <label class="field">
