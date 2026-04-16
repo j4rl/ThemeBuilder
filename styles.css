@@ -64,6 +64,10 @@ button {
   cursor: pointer;
 }
 
+a {
+  color: inherit;
+}
+
 svg {
   display: block;
   width: 1.1rem;
@@ -151,6 +155,7 @@ h2 {
   justify-content: center;
   gap: 8px;
   font-weight: 800;
+  text-decoration: none;
 }
 
 .primary-button {
@@ -187,6 +192,37 @@ h2 {
   gap: 22px;
   align-items: start;
   min-width: 0;
+}
+
+.about-layout {
+  display: grid;
+  gap: 18px;
+  max-width: 980px;
+}
+
+.about-section {
+  padding: clamp(18px, 4vw, 32px);
+}
+
+.about-section h2 {
+  margin-bottom: 12px;
+  font-size: clamp(1.35rem, 3vw, 2rem);
+}
+
+.about-section p {
+  max-width: 760px;
+  margin-bottom: 12px;
+  color: var(--app-muted);
+  line-height: 1.65;
+}
+
+.placeholder-list {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 0;
+  padding-left: 1.1rem;
+  color: var(--app-muted);
+  line-height: 1.55;
 }
 
 .panel,
