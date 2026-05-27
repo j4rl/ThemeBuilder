@@ -101,34 +101,15 @@ const elements = {
   closeComponentsInfo: document.querySelector("#closeComponentsInfo"),
   downloadCss: document.querySelector("#downloadCss"),
   randomizeTheme: document.querySelector("#randomizeTheme"),
-  appThemeButtons: document.querySelectorAll("[data-app-theme-mode]"),
   modeButtons: document.querySelectorAll("[data-preview-mode]")
 };
 
 let previewMode = "light";
 let latestCss = "";
 let latestFontUrl = "";
-let appThemeMode = localStorage.getItem("themebuilder-app-theme") || "auto";
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
-}
-
-function setAppThemeMode(mode) {
-  appThemeMode = ["auto", "light", "dark"].includes(mode) ? mode : "auto";
-  if (appThemeMode === "auto") {
-    document.documentElement.removeAttribute("data-app-theme");
-    localStorage.removeItem("themebuilder-app-theme");
-  } else {
-    document.documentElement.dataset.appTheme = appThemeMode;
-    localStorage.setItem("themebuilder-app-theme", appThemeMode);
-  }
-
-  elements.appThemeButtons.forEach((button) => {
-    const isActive = button.dataset.appThemeMode === appThemeMode;
-    button.classList.toggle("active", isActive);
-    button.setAttribute("aria-pressed", String(isActive));
-  });
 }
 
 function wrapHue(hue) {
@@ -996,7 +977,6 @@ function randomizeTheme() {
 }
 
 populateFontSelects();
-setAppThemeMode(appThemeMode);
 
 elements.baseColor.addEventListener("input", () => syncColorInputs(elements.baseColor, elements.baseColor, elements.baseColorText));
 elements.baseColorText.addEventListener("input", () => syncColorInputs(elements.baseColorText, elements.baseColor, elements.baseColorText));
@@ -1022,11 +1002,6 @@ elements.previewSurface.addEventListener("pointermove", (event) => {
   }
 });
 elements.previewSurface.addEventListener("pointerleave", hidePreviewInspector);
-elements.appThemeButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    setAppThemeMode(button.dataset.appThemeMode);
-  });
-});
 
 elements.modeButtons.forEach((button) => {
   button.addEventListener("click", () => {
